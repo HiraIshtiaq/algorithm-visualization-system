@@ -13,14 +13,12 @@ function BinarySearchVisualizer() {
 
   const [message, setMessage] = useState("");
 
-  // Pause/Stop states
   const [isPaused, setIsPaused] = useState(false);
   const [isStopped, setIsStopped] = useState(false);
 
   const pauseRef = useRef(isPaused);
   const stopRef = useRef(isStopped);
 
-  // Delay function that respects pause & stop
   function delay(ms = 900) {
     return new Promise(res => {
       const start = Date.now();
@@ -34,7 +32,6 @@ function BinarySearchVisualizer() {
     });
   }
 
-  // Generate random sorted array
   function generateRandomArray() {
     let arr = [];
     for (let i = 0; i < 10; i++) arr.push(Math.floor(Math.random() * 90) + 10);
@@ -46,7 +43,6 @@ function BinarySearchVisualizer() {
     setMessage("");
   }
 
-  // Load user input array
   function loadUserArray() {
     let arr = arrayInput
       .split(",")
@@ -60,7 +56,6 @@ function BinarySearchVisualizer() {
     setMessage("");
   }
 
-  // Start the search
   async function startSearch() {
     if (array.length === 0) {
       setMessage("Please generate or add array first");
@@ -71,7 +66,6 @@ function BinarySearchVisualizer() {
       return;
     }
 
-    // Reset pause/stop
     setIsPaused(false);
     setIsStopped(false);
     pauseRef.current = false;

@@ -10,7 +10,6 @@ export async function bfs(
   isStoppedRef
 ) {
 
-  // Waits for current delay, then blocks while paused
   async function wait() {
     await new Promise(res => setTimeout(res, getDelay()));
     while (isPausedRef.current && !isStoppedRef.current) {
@@ -32,7 +31,6 @@ export async function bfs(
 
     if (isStoppedRef.current) return;
 
-    // Dequeue front node
     let node = queue.shift();
     visitedOrder.push(node);
 

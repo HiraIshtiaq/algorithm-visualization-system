@@ -17,7 +17,6 @@ export async function knapsack(
 
     if(controlRef.current.stop) return;
 
-    // Pause handling
     while(controlRef.current.pause){
       await delay(200);
     }
@@ -27,7 +26,6 @@ export async function knapsack(
     await delay();
 
     for(let w=0; w<=capacity; w++){
-      // 1. correct
       if (controlRef.current.stop) return;
       while (controlRef.current.pause) {
         await delay(200);
@@ -60,6 +58,6 @@ export async function knapsack(
     await delay();
   }
 
-  setMessage("Knapsack Complete ✅");
+  setMessage("Knapsack Complete");
   setActiveItem(null);
 }

@@ -1,6 +1,3 @@
-// 
-
-
 
 import { useState, useRef } from "react";
 import { knapsack } from "../algorithms/knapsack";
@@ -24,7 +21,6 @@ function KnapsackVisualizer() {
     return new Promise(res => setTimeout(res, ms));
   }
 
-  // ✅ START
   async function startKnapsack() {
     controlRef.current.stop = false;
     controlRef.current.pause = false;
@@ -41,30 +37,26 @@ function KnapsackVisualizer() {
     );
   }
 
-  // ✅ PAUSE
   function pauseKnapsack() {
     controlRef.current.pause = true;
   }
 
-  // ✅ RESUME
   function resumeKnapsack() {
     controlRef.current.pause = false;
   }
 
-  // ✅ STOP
   function stopKnapsack() {
     controlRef.current.stop = true;
-    setMessage("Stopped ❌");
+    setMessage("Stopped ");
     setActiveItem(null);
   }
 
-  // ✅ USER INPUT PARSER
   function handleItemsChange(e) {
     try {
       const parsed = JSON.parse(e.target.value);
       setItems(parsed);
     } catch {
-      setMessage("Invalid JSON ❌");
+      setMessage("Invalid JSON");
     }
   }
 
@@ -73,7 +65,6 @@ function KnapsackVisualizer() {
 
       <h2>0/1 Knapsack Visualizer</h2>
 
-      {/* USER INPUT */}
       <textarea
         placeholder='[{"name":"Item1","weight":2,"value":20}]'
         onChange={handleItemsChange}
@@ -86,7 +77,6 @@ function KnapsackVisualizer() {
         placeholder="Capacity"
       />
 
-      {/* ITEMS */}
       <div className="items-container">
         {items.map((item, index) => {
           let cls = "item-box";
@@ -101,7 +91,6 @@ function KnapsackVisualizer() {
         })}
       </div>
 
-      {/* BAG */}
       <h3>Bag</h3>
       <div className="bag">
         {bag.map((item, i) => (
@@ -113,7 +102,6 @@ function KnapsackVisualizer() {
 
       <p>{message}</p>
 
-      {/* CONTROLS */}
       <div className="controls">
         <button onClick={startKnapsack}>Start</button>
         <button onClick={pauseKnapsack}>Pause</button>

@@ -1,16 +1,4 @@
-/**
- * bucketSort.js
- * Generates animation steps for visualizing Bucket Sort.
- *
- * Step types:
- *   { type: 'bucket',   indices: [i], bucketId: number }   → bar i placed into a bucket (color = bucket color)
- *   { type: 'compare',  indices: [i, j] }                  → comparing two bars inside a bucket
- *   { type: 'revert',   indices: [i, j] }                  → un-highlight
- *   { type: 'overwrite', indices: [pos], value: number, bucketId: number } → writing back to main array
- *   { type: 'sorted',   indices: [i] }                     → bar fully placed and sorted
- */
 
-// 10 distinct bucket colors (used both in algorithm and legend)
 export const BUCKET_COLORS = [
   '#f72585', // bucket 0 — hot pink
   '#ff9f1c', // bucket 1 — orange

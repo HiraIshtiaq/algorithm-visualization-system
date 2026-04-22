@@ -37,7 +37,6 @@ function TowerOfHanoiVisualizer() {
 
       if(stopRef.current) break;
 
-      // Pause handling
       while(pauseRef.current){
         await delay(200);
       }
