@@ -1,4 +1,6 @@
-// BucketSortVisualizer.jsx
+
+// renders ONLY the visualization. Title, description, complexity are from :→ BucketSortPage.jsx
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { getBucketSortAnimations, generateRandomArray, BUCKET_COLORS } from '../algorithms/bucketSort';
 
@@ -124,24 +126,7 @@ export default function BucketSortVisualizer() {
   const numBuckets = Math.min(10, length);
 
   return (
-    <div className="algo-page">
-      <h1>Bucket Sort</h1>
-      <p className="algo-description">
-        Bucket Sort distributes elements into a number of buckets, sorts each bucket individually
-        (using insertion sort), then concatenates all buckets. It works best when input is uniformly
-        distributed. Each bucket is shown in a distinct color during the animation.
-      </p>
-
-      <div className="complexity-box">
-        <h3>Time Complexity</h3>
-        <ul>
-          <li>Best Case: O(n + k) — k buckets, uniform distribution</li>
-          <li>Average Case: O(n + k)</li>
-          <li>Worst Case: O(n²) — all elements in one bucket</li>
-          <li>Space Complexity: O(n + k)</li>
-        </ul>
-      </div>
-
+    <>
       <div className="viz-section-title">Bucket Sort Visualization</div>
 
       <div className="input-row">
@@ -198,6 +183,6 @@ export default function BucketSortVisualizer() {
       <div className={`step-panel ${stepType}`}>
         {step || 'Press ▶ Start to begin the visualization.'}
       </div>
-    </div>
+    </>
   );
 }

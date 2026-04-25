@@ -6,7 +6,7 @@ function SelectionSortPage() {
       <h1>Selection Sort</h1>
       <p className="algo-description">
         Selection Sort repeatedly finds the minimum element from the unsorted
-        part of the array and moves it to the front. It makes exactly n–1 swaps,
+        part of the array and moves it to the front. It makes exactly n-1 swaps,
         which is useful when write operations are costly, but it is slow on
         large arrays due to O(n²) comparisons.
       </p>
@@ -21,7 +21,7 @@ function SelectionSortPage() {
         </ul>
       </div>
 
-      <selectionSortVisualizer />
+      <SelectionSortVisualizer />
     </div>
   );
 }

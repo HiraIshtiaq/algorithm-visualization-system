@@ -1,37 +1,15 @@
-/**
- * treeTraversal.js
- *
- * Provides:
- *   1. buildSampleTree()  — returns a binary tree node structure
- *   2. Traversal animation generators for:
- *        - Inorder   (Left → Root → Right)
- *        - Preorder  (Root → Left → Right)
- *        - Postorder (Left → Right → Root)
- *        - BFS / Level Order
- *
- * Each animation step:
- *   { type: 'visit',   nodeId }   — node is being visited (highlight)
- *   { type: 'active',  nodeId }   — node is on the call stack / queue
- *   { type: 'done',    nodeId }   — node processing complete
- *   { type: 'edge',    from, to } — traversal edge highlight
- *   { type: 'result',  value }    — append value to result array display
- */
-
-// ─── Tree node structure ──────────────────────────────────────────────────────
 export class TreeNode {
   constructor(id, value, x, y) {
     this.id    = id;
     this.value = value;
-    this.x     = x;    // 0–100 coordinate space
+    this.x     = x;    
     this.y     = y;
     this.left  = null;
     this.right = null;
   }
 }
 
-// ─── Pre-built trees ──────────────────────────────────────────────────────────
 export function buildBalancedTree() {
-  // A balanced BST with 15 nodes, 4 levels
   //                     8
   //              4             12
   //          2       6     10      14
@@ -83,7 +61,7 @@ export const SAMPLE_TREES = {
   small:    { label: 'Small Tree (8 nodes)',     build: buildSmallTree    },
 };
 
-// ─── Collect all nodes/edges from tree ───────────────────────────────────────
+// collect all nodes from tree 
 export function collectTree(root) {
   const nodes = [], edges = [];
   const dfs = (node) => {
@@ -96,7 +74,7 @@ export function collectTree(root) {
   return { nodes, edges };
 }
 
-// ─── Inorder: Left → Root → Right ────────────────────────────────────────────
+// inorder
 export function getInorderAnimations(root) {
   const animations = [];
   const inorder = (node, parent) => {
@@ -113,7 +91,7 @@ export function getInorderAnimations(root) {
   return animations;
 }
 
-// ─── Preorder: Root → Left → Right ───────────────────────────────────────────
+// preorder
 export function getPreorderAnimations(root) {
   const animations = [];
   const preorder = (node, parent) => {
@@ -130,7 +108,7 @@ export function getPreorderAnimations(root) {
   return animations;
 }
 
-// ─── Postorder: Left → Right → Root ──────────────────────────────────────────
+//postorder
 export function getPostorderAnimations(root) {
   const animations = [];
   const postorder = (node, parent) => {
@@ -147,7 +125,7 @@ export function getPostorderAnimations(root) {
   return animations;
 }
 
-// ─── BFS / Level Order ────────────────────────────────────────────────────────
+// BFS 
 export function getBFSAnimations(root) {
   const animations = [];
   if (!root) return animations;

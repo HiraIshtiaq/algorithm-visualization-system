@@ -1,8 +1,9 @@
-// DijkstrasVisualizer.jsx
+
+// itt renders ONLY the visualization. Title, description, complexity are from:→ DijkstrasPage.jsx
+
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { SAMPLE_GRAPHS, getDijkstraAnimations } from '../algorithms/dijkstrasAlgorithm';
 
-// Node / edge color palette (light-theme friendly)
 const C = {
   nodeDef:      '#e3f2fd',
   nodeStroke:   '#1976d2',
@@ -20,14 +21,14 @@ const C = {
 };
 
 const LEGEND = [
-  { color: C.nodeStart,    label: 'Start Node'        },
-  { color: C.nodeEnd,      label: 'End Node'          },
-  { color: C.nodeVisit,    label: 'Currently Visiting'},
-  { color: C.nodeConsider, label: 'Considering'       },
-  { color: C.nodeSettled,  label: 'Settled'           },
-  { color: C.nodePath,     label: 'Shortest Path'     },
-  { color: C.edgeActive,   label: 'Active Edge'       },
-  { color: C.edgeSettled,  label: 'Path Edge'         },
+  { color: C.nodeStart,    label: 'Start Node'         },
+  { color: C.nodeEnd,      label: 'End Node'           },
+  { color: C.nodeVisit,    label: 'Currently Visiting' },
+  { color: C.nodeConsider, label: 'Considering'        },
+  { color: C.nodeSettled,  label: 'Settled'            },
+  { color: C.nodePath,     label: 'Shortest Path'      },
+  { color: C.edgeActive,   label: 'Active Edge'        },
+  { color: C.edgeSettled,  label: 'Path Edge'          },
 ];
 
 const edgeKey = (a, b) => [a, b].sort().join('--');
@@ -46,7 +47,7 @@ export default function DijkstrasVisualizer() {
   const timers   = useRef([]);
   const pauseRef = useRef(false);
 
-  const getDelay  = (s) => Math.round(700 - ((s - 1) / 99) * 680);
+  const getDelay    = (s) => Math.round(700 - ((s - 1) / 99) * 680);
   const clearTimers = () => { timers.current.forEach(clearTimeout); timers.current = []; };
 
   const graph = SAMPLE_GRAPHS[graphKey];
@@ -152,10 +153,7 @@ export default function DijkstrasVisualizer() {
       default:         return C.nodeDef;
     }
   };
-  const nodeTextColor = (id) => {
-    const st = nodeStates[id];
-    return (st === 'default') ? C.nodeText : C.nodeTextLight;
-  };
+  const nodeTextColor = (id) => (nodeStates[id] === 'default') ? C.nodeText : C.nodeTextLight;
   const edgeColor = (a, b) => {
     const st = edgeStates[edgeKey(a, b)];
     if (st === 'active')  return C.edgeActive;
@@ -172,28 +170,13 @@ export default function DijkstrasVisualizer() {
   const py = (y) => (y / 100) * H;
 
   return (
-    <div className="algo-page">
-      <h1>Dijkstra's Algorithm</h1>
-      <p className="algo-description">
-        Dijkstra's Algorithm finds the shortest path between nodes in a weighted graph. It greedily
-        picks the unvisited node with the smallest known distance, relaxes its neighbors, and
-        repeats until the destination is reached. It works correctly on graphs with non-negative edge weights.
-      </p>
-
-      <div className="complexity-box">
-        <h3>Time Complexity</h3>
-        <ul>
-          <li>Best / Average / Worst Case: O((V + E) log V) with a priority queue</li>
-          <li>V = number of nodes, E = number of edges</li>
-          <li>Space Complexity: O(V)</li>
-        </ul>
-      </div>
-
+    <>
       <div className="viz-section-title">Dijkstra's Algorithm Visualization</div>
 
-      {/* ── Controls ── */}
+      {/* Graph selector + speed */}
       <div className="input-row">
-        <select style={{ padding: '8px 14px', borderRadius: 6, border: '1px solid #bbb', fontSize: 13, fontFamily: 'inherit', background: '#fff', color: '#1a1a2e', cursor: 'pointer' }}
+        <select
+          style={{ padding: '8px 14px', borderRadius: 6, border: '1px solid #bbb', fontSize: 13, fontFamily: 'inherit', background: '#fff', color: '#1a1a2e', cursor: 'pointer' }}
           value={graphKey} disabled={isRunning} onChange={handleGraphChange}>
           {Object.entries(SAMPLE_GRAPHS).map(([k, g]) => (
             <option key={k} value={k}>{g.label}</option>
@@ -221,7 +204,7 @@ export default function DijkstrasVisualizer() {
         ))}
       </div>
 
-      {/* ── Graph + Distance Panel ── */}
+      {/* Graph SVG + Distance panel */}
       <div className="layout-with-panel">
         <div className="layout-main">
           <div className="graph-canvas">
@@ -248,8 +231,8 @@ export default function DijkstrasVisualizer() {
               })}
               {/* Nodes */}
               {graph.nodes.map(({ id, label, x, y }) => {
-                const fill = nodeColor(id);
-                const isPath = ['path','start','end'].includes(nodeStates[id]);
+                const fill   = nodeColor(id);
+                const isPath = ['path', 'start', 'end'].includes(nodeStates[id]);
                 return (
                   <g key={id}>
                     {isPath && <circle cx={px(x)} cy={py(y)} r={26} fill="none" stroke={fill} strokeWidth="2" opacity="0.3" />}
@@ -277,7 +260,7 @@ export default function DijkstrasVisualizer() {
         <div className="side-panel">
           <div className="side-panel-title">Node Distances</div>
           {graph.nodes.map(({ id }) => {
-            const d = distMap[id];
+            const d  = distMap[id];
             const st = nodeStates[id];
             const bg = st === 'path' ? '#e8f5e9' : st === 'settled' ? '#ede7f6' : '#f5f5f5';
             return (
@@ -301,6 +284,6 @@ export default function DijkstrasVisualizer() {
       <div className={`step-panel ${stepType}`}>
         {step || 'Select a graph and press ▶ Start to find the shortest path.'}
       </div>
-    </div>
+    </>
   );
 }

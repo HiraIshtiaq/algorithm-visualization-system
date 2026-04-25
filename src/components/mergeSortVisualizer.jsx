@@ -1,4 +1,7 @@
-// MergeSortVisualizer.jsx
+
+// ONLY the visualization part.
+// Title, description, and complexity:- are handled by MergeSortPage.jsx
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { getMergeSortAnimations, generateRandomArray } from '../algorithms/mergeSort';
 
@@ -122,37 +125,21 @@ export default function MergeSortVisualizer() {
   const maxVal = Math.max(...array, 1);
   const showNums = length <= 40;
 
+  // ── Only the visualization section is rendered here ──
   return (
-    <div className="algo-page">
-      <h1>Merge Sort</h1>
-      <p className="algo-description">
-        Merge Sort is a divide-and-conquer algorithm. It recursively splits the array in half,
-        sorts each half, then merges them back together in sorted order. It guarantees
-        O(n log n) time in all cases and is stable.
-      </p>
-
-      <div className="complexity-box">
-        <h3>Time Complexity</h3>
-        <ul>
-          <li>Best Case: O(n log n)</li>
-          <li>Average Case: O(n log n)</li>
-          <li>Worst Case: O(n log n)</li>
-          <li>Space Complexity: O(n) — uses auxiliary array</li>
-        </ul>
-      </div>
-
+    <>
       <div className="viz-section-title">Merge Sort Visualization</div>
 
-      {/* ── Input row ── */}
+      {/* Input row */}
       <div className="input-row">
         <input className="input-text" placeholder="Enter array (e.g. 30,10,50,20,40)"
           value={inputVal} onChange={e => setInputVal(e.target.value)}
           disabled={isSorting} onKeyDown={e => e.key === 'Enter' && handleAddArray()} />
-        <button className="btn btn-primary"  onClick={handleAddArray} disabled={isSorting}>Add Your Array</button>
-        <button className="btn btn-success"  onClick={() => resetArray()} disabled={isSorting}>Generate Random Array</button>
+        <button className="btn btn-primary" onClick={handleAddArray} disabled={isSorting}>Add Your Array</button>
+        <button className="btn btn-success" onClick={() => resetArray()} disabled={isSorting}>Generate Random Array</button>
       </div>
 
-      {/* ── Sliders ── */}
+      {/* Sliders */}
       <div className="input-row">
         <div className="slider-group">
           <label>Speed</label>
@@ -164,7 +151,7 @@ export default function MergeSortVisualizer() {
         </div>
       </div>
 
-      {/* ── Controls ── */}
+      {/* Controls */}
       <div className="controls-row">
         <button className="btn btn-primary"   onClick={handleSort}  disabled={isSorting || isSorted}>▶ Start</button>
         <button className="btn btn-warning"   onClick={handlePause} disabled={!isSorting}>{isPaused ? '▶ Resume' : '⏸ Pause'}</button>
@@ -172,7 +159,7 @@ export default function MergeSortVisualizer() {
         <button className="btn btn-secondary" onClick={() => resetArray()} disabled={isSorting}>↺ Reset</button>
       </div>
 
-      {/* ── Legend ── */}
+      {/* Legend */}
       <div className="legend-row">
         {LEGEND.map(({ color, label }) => (
           <div key={label} className="legend-item">
@@ -182,7 +169,7 @@ export default function MergeSortVisualizer() {
         ))}
       </div>
 
-      {/* ── Bars ── */}
+      {/* Bars */}
       <div className="viz-canvas">
         <div className="bars-wrap">
           {array.map((val, idx) => (
@@ -194,10 +181,10 @@ export default function MergeSortVisualizer() {
         </div>
       </div>
 
-      {/* ── Step explanation ── */}
+      {/* Step explanation */}
       <div className={`step-panel ${stepType}`}>
         {step || 'Press ▶ Start to begin the visualization.'}
       </div>
-    </div>
+    </>
   );
 }

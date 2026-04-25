@@ -1,16 +1,4 @@
-/**
- * bucketSort.js
- * Generates animation steps for visualizing Bucket Sort.
- *
- * Step types:
- *   { type: 'bucket',   indices: [i], bucketId: number }   → bar i placed into a bucket (color = bucket color)
- *   { type: 'compare',  indices: [i, j] }                  → comparing two bars inside a bucket
- *   { type: 'revert',   indices: [i, j] }                  → un-highlight
- *   { type: 'overwrite', indices: [pos], value: number, bucketId: number } → writing back to main array
- *   { type: 'sorted',   indices: [i] }                     → bar fully placed and sorted
- */
-
-// 10 distinct bucket colors (used both in algorithm and legend)
+// 10 distinct buckets colors are using in algorithm
 export const BUCKET_COLORS = [
   '#f72585', // bucket 0 — hot pink
   '#ff9f1c', // bucket 1 — orange
@@ -35,11 +23,11 @@ export function getBucketSortAnimations(array) {
   const minVal = Math.min(...arr);
   const range = maxVal - minVal || 1;
 
-  // Build buckets and track original indices
+  // to build buckets and track original indices
   const buckets = Array.from({ length: numBuckets }, () => []);
   const indexMap = arr.map((val, i) => ({ val, origIdx: i }));
 
-  // Assign each element to a bucket — emit 'bucket' animation
+  //to assign
   indexMap.forEach(({ val, origIdx }) => {
     const bucketId = Math.min(
       Math.floor(((val - minVal) / range) * numBuckets),
@@ -49,7 +37,7 @@ export function getBucketSortAnimations(array) {
     animations.push({ type: 'bucket', indices: [origIdx], bucketId });
   });
 
-  // Sort each bucket (insertion sort) with compare animations
+  // Sort each bucket (insertion sort) 
   buckets.forEach((bucket, bucketId) => {
     for (let i = 1; i < bucket.length; i++) {
       let j = i;
@@ -62,7 +50,7 @@ export function getBucketSortAnimations(array) {
     }
   });
 
-  // Concatenate buckets back and emit overwrite animations
+  // Concatenate buckets back and emit overwrite 
   let pos = 0;
   buckets.forEach((bucket, bucketId) => {
     bucket.forEach(({ val }) => {
@@ -75,9 +63,9 @@ export function getBucketSortAnimations(array) {
   return animations;
 }
 
-/**
- * Utility: generate a random integer array
- */
+
+//  to generate a random integer array
+ 
 export function generateRandomArray(length = 30, min = 5, max = 100) {
   return Array.from({ length }, () =>
     Math.floor(Math.random() * (max - min + 1)) + min
