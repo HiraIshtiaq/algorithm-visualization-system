@@ -1,14 +1,4 @@
-/**
- * selectionSort.js
- * Generates animation steps for visualizing Selection Sort.
- *
- * Step types:
- *   { type: 'compare',  indices: [i, j] }         → comparing bar j against current minimum
- *   { type: 'revert',   indices: [i, j] }         → un-highlight those bars
- *   { type: 'newMin',   indices: [minIdx] }        → mark new minimum found
- *   { type: 'swap',     indices: [i, minIdx] }     → swap two bars
- *   { type: 'sorted',   indices: [i] }             → mark bar as permanently sorted
- */
+
 
 export function getSelectionSortAnimations(array) {
   const animations = [];

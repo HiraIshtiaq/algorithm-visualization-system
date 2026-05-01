@@ -154,6 +154,8 @@ function App() {
                                     "Bubble Sort",
                                     "Binary Search",
                                     "Breadth-First Search",
+                                    "Dijkstra's Algorithm",
+
                                 ].map((algo) => (
                                     <div
                                         key={algo}
@@ -164,8 +166,6 @@ function App() {
                                         {algo}
                                     </div>
                                 ))}
-                                {/* Dijkstra's doesn't have a page yet, keep as non-link */}
-                                <div className="card">Dijkstra's Algorithm</div>
                             </div>
                         </section>
                     </div>
@@ -246,88 +246,4 @@ function App() {
     );
 }
 
-
 export default App;
-
-
-//   return (
-//     <Router>
-//       <div>
-//         {/* NAVBAR */}
-//         <nav className="navbar">
-//           <div className="logo">Algorithm Visualizer</div>
-//           <ul className="nav-links">
-//             <li onClick={() => setPage("home")}>Home</li>
-
-//             <li className="dropdown">
-//               Algorithms ▾
-//               <div className="dropdown-menu">
-//                 {algorithms.map((algo, index) => (
-//                   <div
-//                     key={index}
-//                     className="dropdown-item"
-//                     onClick={() => {
-//                       if (algorithmPages[algo]) {
-//                         setPage(algo); 
-//                       }
-//                     }}
-//                   >
-//                     {algo}
-//                   </div>
-//                 ))}
-//               </div>
-//             </li>
-
-//             <li onClick={() => setPage("compare")}>Compare</li>
-//           </ul>
-//         </nav>
-
-//         {/* HOME PAGE */}
-//         {page === "home" && (
-//           <div>
-//             {/* HERO SECTION */}
-//             <section className="hero">
-//               <h1>Algorithm Visualizer</h1>
-//               <p>
-//                 Understand algorithms through step-by-step interactive
-//                 visualizations.
-//               </p>
-//               <div className="hero-buttons">
-//                 <button className="secondary">Compare Algorithms</button>
-//               </div>
-//             </section>
-
-//             {/* POPULAR ALGORITHMS */}
-//             <section className="cards">
-//               <h2>Popular Algorithms</h2>
-//               <div className="card-grid">
-//                 <div className="card">Quick Sort</div>
-//                 <div className="card">Merge Sort</div>
-//                 <div className="card">Bubble Sort</div>
-//                 <div className="card">Binary Search</div>
-//                 <div className="card">Dijkstra's Algorithm</div>
-//                 <div className="card">Breadth First Search</div>
-                
-//               </div>
-//             </section>
-//           </div>
-//         )}
-
-//         {/* COMPARE PAGE */}
-//         {page === "compare" && (
-//           <div className="compare-page">
-//             <h1>Compare Algorithms</h1>
-//             <p>make table of time complexity and space complexity(to do)</p>
-//           </div>
-//         )}
-
-//         {/* ALGORITHM PAGES */}
-//         {Object.keys(algorithmPages).map((algo) => {
-//           return page === algo ? <div key={algo}>{algorithmPages[algo]}</div> : null;
-//         })}
-//       </div>
-//     </Router>
-//   );
-// }
-
-// export default App;

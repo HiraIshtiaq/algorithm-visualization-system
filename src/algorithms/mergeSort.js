@@ -1,17 +1,4 @@
-/**
- * mergeSort.js
- * Generates an array of animation steps for visualizing Merge Sort.
- * Each step describes which bars to highlight, compare, or overwrite.
- */
 
-/**
- * Returns an array of animation steps.
- * Each step is an object:
- *   { type: 'compare' | 'overwrite', indices: [i, j], value?: number }
- *
- * - 'compare'  → highlight indices[0] and indices[1] (comparison phase)
- * - 'overwrite' → set arr[indices[0]] = value        (merge write phase)
- */
 export function getMergeSortAnimations(array) {
   const animations = [];
   if (array.length <= 1) return animations;
@@ -73,10 +60,6 @@ function doMerge(mainArray, startIdx, midIdx, endIdx, auxiliaryArray, animations
   }
 }
 
-/**
- * Utility: generate a random integer array of given length,
- * values between min and max (inclusive).
- */
 export function generateRandomArray(length = 30, min = 5, max = 100) {
   return Array.from({ length }, () =>
     Math.floor(Math.random() * (max - min + 1)) + min

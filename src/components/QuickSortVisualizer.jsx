@@ -112,5 +112,5 @@ function QuickSortVisualizer() {
         </div>
     )
 }
-
 export default QuickSortVisualizer
+

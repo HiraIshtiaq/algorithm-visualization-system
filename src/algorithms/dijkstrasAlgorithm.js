@@ -1,28 +1,3 @@
-/**
- * dijkstrasAlgorithm.js
- *
- * Provides:
- *   1. A set of pre-built sample graphs (nodes + weighted edges)
- *   2. getDijkstraAnimations(graph, startId) — returns ordered animation steps
- *
- * Animation step types:
- *   { type: 'visit',     nodeId }              — popped from priority queue (processing)
- *   { type: 'consider',  nodeId, via, dist }   — neighbor being considered / relaxed
- *   { type: 'settled',   nodeId, dist }        — shortest path confirmed for node
- *   { type: 'edgeActive',   from, to }         — edge being traversed
- *   { type: 'edgeSettled',  from, to }         — edge is part of shortest path tree
- *   { type: 'pathTrace', nodeId }              — final path highlight from end→start
- */
-
-// ─── Graph definitions ────────────────────────────────────────────────────────
-
-/**
- * Graph format:
- *   nodes: [{ id, label, x, y }]           — x,y in 0–100 coordinate space
- *   edges: [{ from, to, weight }]           — undirected
- *   start: nodeId
- *   end:   nodeId
- */
 export const SAMPLE_GRAPHS = {
   simple: {
     label: 'Simple Graph',

@@ -1,21 +1,3 @@
-/**
- * treeTraversal.js
- *
- * Provides:
- *   1. buildSampleTree()  — returns a binary tree node structure
- *   2. Traversal animation generators for:
- *        - Inorder   (Left → Root → Right)
- *        - Preorder  (Root → Left → Right)
- *        - Postorder (Left → Right → Root)
- *        - BFS / Level Order
- *
- * Each animation step:
- *   { type: 'visit',   nodeId }   — node is being visited (highlight)
- *   { type: 'active',  nodeId }   — node is on the call stack / queue
- *   { type: 'done',    nodeId }   — node processing complete
- *   { type: 'edge',    from, to } — traversal edge highlight
- *   { type: 'result',  value }    — append value to result array display
- */
 
 // ─── Tree node structure ──────────────────────────────────────────────────────
 export class TreeNode {

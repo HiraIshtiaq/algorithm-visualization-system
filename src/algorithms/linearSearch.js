@@ -1,3 +1,4 @@
+
 // Searching/linearSearch.js
 export function linearSearch(array, target) {
     const steps = [];

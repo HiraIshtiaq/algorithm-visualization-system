@@ -104,9 +104,9 @@ function BinarySearchVisualizer() {
     if (result === "stopped") {
       setMessage("Search stopped");
     } else if (result === -1) {
-      // Message already set in binarySearch
+      
     } else {
-      setMessage(`✓ Target found at index ${result}`);
+      setMessage(` Target found at index ${result}`);
     }
   }
 
@@ -132,7 +132,7 @@ function BinarySearchVisualizer() {
     <div className="visualizer">
       <h2>Binary Search Visualization</h2>
 
-      {/* Array input controls */}
+     
       <div className="controls input-controls">
         <input
           type="text"
@@ -149,7 +149,7 @@ function BinarySearchVisualizer() {
         </button>
       </div>
 
-      {/* Target input */}
+
       <div className="controls target-controls">
         <input
           type="number"
@@ -160,7 +160,6 @@ function BinarySearchVisualizer() {
         />
       </div>
 
-      {/* Speed control */}
       <div className="speed-control">
         <span className="speed-label">Speed:</span>
         {[1, 2, 3, 4].map((s) => (
@@ -175,7 +174,7 @@ function BinarySearchVisualizer() {
         ))}
       </div>
 
-      {/* Array visualization */}
+    
       <div className="binary-container">
         {array.map((value, index) => {
           let className = "binary-box";
@@ -191,7 +190,7 @@ function BinarySearchVisualizer() {
         })}
       </div>
 
-      {/* Playback controls */}
+   
       <div className="controls playback-controls">
         <button
           onClick={startSearch}
