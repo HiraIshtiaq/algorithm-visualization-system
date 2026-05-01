@@ -21,15 +21,6 @@ Pathfinding (optional if included)
 🛠️ Tech Stack
 Frontend: HTML, CSS, JavaScript / React 
 Visualization Logic: Custom animations 
-📂 Project Structure
-algorithm-visualization-system/
-│── public/
-│── src/
-│   ├── components/
-│   ├── algorithms/
-│   ├── pages/
-│── package.json
-│── README.md
 
 🚀 Getting Started
 🔧 Installation
