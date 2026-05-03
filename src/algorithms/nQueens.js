@@ -9,7 +9,8 @@ export async function nQueens(
   setMessage,
   getDelay,
   isPausedRef,
-  isStoppedRef
+  isStoppedRef,
+  setDpStats   // new: (rowStats[]) => void  — [{row, before, after}]
 ) {
 
   // ── Wait helper ────────────────────────────────────────────────────────────
@@ -30,6 +31,10 @@ export async function nQueens(
   }
 
   const ALL_COLS = (1 << n) - 1;
+
+  // ── DP stats for visualizer ────────────────────────────────────────────────
+  const rowStats = [];
+  if (setDpStats) setDpStats([]);
 
   // ── DP table ───────────────────────────────────────────────────────────────
   let dpCurrent = [{ cols: [], colMask: 0, ldMask: 0, rdMask: 0 }];
@@ -128,7 +133,12 @@ export async function nQueens(
       }
     }
 
+    const beforeCount = dpCurrent.length;
     dpCurrent = dpNext;
+
+    // ── Emit updated DP stats ──────────────────────────────────────────────
+    rowStats.push({ row, before: beforeCount, after: dpNext.length });
+    if (setDpStats) setDpStats([...rowStats]);
 
     setCurrentCol(null);
     setConflictCells([]);

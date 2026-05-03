@@ -39,16 +39,15 @@ function KruskalVisualizer() {
   const [message, setMessage]     = useState("");
   const [isSorting, setIsSorting] = useState(false);
   const [isPaused, setIsPaused]   = useState(false);
-  const [speed, setSpeed]         = useState(500);
+  const [speed, setSpeed]         = useState(2);
 
   // ── Refs (readable inside async algorithm) ─────
   const isPausedRef  = useRef(false);
   const isStoppedRef = useRef(false);
-  const speedRef     = useRef(500);
-
-  function getDelay() {
-    return speedRef.current;
-  }
+  const speedRef     = useRef(2);
+  const speedVals   = { 1: 1000, 2: 500, 3: 200, 4: 50 };
+  const speedLabels = { 1: "Slow", 2: "Medium", 3: "Fast", 4: "Instant" };
+  function getDelay() { return speedVals[speedRef.current] || 500; }
 
   // ── Reset all highlights ───────────────────────
   function resetVisuals() {
@@ -167,18 +166,12 @@ function KruskalVisualizer() {
     setMessage("Stopped.");
   }
 
-  // ── Speed label ────────────────────────────────
-  function getSpeedLabel() {
-    if (speed <= 200) return "Fast";
-    if (speed <= 600) return "Medium";
-    return "Slow";
+  function handleRestart() {
+    stopAlgo();
+    setTimeout(() => startAlgo(), 50);
   }
 
-  function handleSpeedChange(e) {
-    const val = Number(e.target.value);
-    setSpeed(val);
-    speedRef.current = val;
-  }
+  function handleSpeedChange(val) { setSpeed(val); speedRef.current = val; }
 
   // ── Check what state an edge is in ────────────
   function isEdgeMatch(list, edge) {
@@ -217,39 +210,32 @@ function KruskalVisualizer() {
 
       <h2>Kruskal's Algorithm Visualization</h2>
 
-      {/* Row 1 — Graph input */}
-      <div className="controls">
+      <div className="controls input-controls">
         <input
           type="text"
           placeholder='e.g. "0-1:4, 0-2:3, 1-2:1"'
           value={edgeInput}
           onChange={(e) => setEdgeInput(e.target.value)}
+          disabled={isSorting}
         />
-        <button onClick={loadUserGraph} disabled={isSorting}>Add Your Graph</button>
-        <button onClick={loadDefaultGraph} disabled={isSorting}>Load Default Graph</button>
+        <button onClick={loadUserGraph} disabled={isSorting} className="btn btn-secondary">Load Graph</button>
+        <button onClick={loadDefaultGraph} disabled={isSorting} className="btn btn-secondary">Default Graph</button>
       </div>
 
-      {/* Row 2 — Start / Pause / Stop */}
-      <div className="controls">
-        <button onClick={startAlgo} disabled={isSorting}>Start</button>
-        {!isPaused ? (
-          <button onClick={pauseAlgo} disabled={!isSorting}>Pause</button>
-        ) : (
-          <button onClick={resumeAlgo}>Resume</button>
-        )}
-        <button onClick={stopAlgo} disabled={!isSorting && !isPaused}>Stop</button>
+      <div className="speed-control">
+        <span className="speed-label">Speed:</span>
+        {[1, 2, 3, 4].map((s) => (
+          <button key={s} className={`btn btn-speed ${speed === s ? "active" : ""}`} onClick={() => handleSpeedChange(s)}>
+            {speedLabels[s]}
+          </button>
+        ))}
       </div>
 
-      {/* Row 3 — Speed slider */}
-      <div className="controls">
-        <div className="speed-label">
-          <span>Speed: <strong>{getSpeedLabel()}</strong></span>
-          <div className="speed-row">
-            <span>Fast</span>
-            <input type="range" min="100" max="1000" step="100" value={speed} onChange={handleSpeedChange} />
-            <span>Slow</span>
-          </div>
-        </div>
+      <div className="controls playback-controls">
+        <button onClick={startAlgo} disabled={isSorting} className="btn btn-primary">Start</button>
+        <button onClick={isPaused ? resumeAlgo : pauseAlgo} disabled={!isSorting} className="btn btn-secondary">{isPaused ? "Resume" : "Pause"}</button>
+        <button onClick={stopAlgo} disabled={!isSorting && !isPaused} className="btn btn-danger">Stop</button>
+        <button onClick={handleRestart} disabled={!isSorting && !isPaused} className="btn btn-secondary">Restart</button>
       </div>
 
       {/* Graph SVG */}

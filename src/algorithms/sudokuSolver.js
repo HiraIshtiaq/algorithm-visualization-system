@@ -1,87 +1,88 @@
-export function sudokuSolver(userBoard) {
-    const steps = [];
 
-    // Use user board if provided, otherwise use default
-    const initialBoard = userBoard ? JSON.parse(JSON.stringify(userBoard)) : [
-        [5, 3, 0, 0, 7, 0, 0, 0, 0],
-        [6, 0, 0, 1, 9, 5, 0, 0, 0],
-        [0, 9, 8, 0, 0, 0, 0, 6, 0],
-        [8, 0, 0, 0, 6, 0, 0, 0, 3],
-        [4, 0, 0, 8, 0, 3, 0, 0, 1],
-        [7, 0, 0, 0, 2, 0, 0, 0, 6],
-        [0, 6, 0, 0, 0, 0, 2, 8, 0],
-        [0, 0, 0, 4, 1, 9, 0, 0, 5],
-        [0, 0, 0, 0, 8, 0, 0, 7, 9]
-    ];
+export function sudokuSolver(userBoard, boardSize = 9) {
+  const steps = [];
+  const movesLog = [];
+  const N = boardSize;
+  const boxSize = Math.sqrt(N); // 2 for 4x4, 3 for 9x9
 
-    steps.push({
-        board: JSON.parse(JSON.stringify(initialBoard)),
-        explanation: "Start",
-        description: "Starting Sudoku Solver",
-        row: -1,
-        col: -1
-    });
+  const DEFAULT_9x9 = [
+    [5,3,0,0,7,0,0,0,0], [6,0,0,1,9,5,0,0,0], [0,9,8,0,0,0,0,6,0],
+    [8,0,0,0,6,0,0,0,3], [4,0,0,8,0,3,0,0,1], [7,0,0,0,2,0,0,0,6],
+    [0,6,0,0,0,0,2,8,0], [0,0,0,4,1,9,0,0,5], [0,0,0,0,8,0,0,7,9]
+  ];
 
-    // solving algorithm
-    function isValid(board, row, col, num) {
-        for (let i = 0; i < 9; i++) {
-            if (board[row][i] === num) return false;
-            if (board[i][col] === num) return false;
-            const boxRow = 3 * Math.floor(row / 3) + Math.floor(i / 3);
-            const boxCol = 3 * Math.floor(col / 3) + i % 3;
-            if (board[boxRow][boxCol] === num) return false;
-        }
-        return true;
+  const DEFAULT_4x4 = [
+    [1, 0, 0, 4],
+    [0, 4, 1, 0],
+    [0, 1, 4, 0],
+    [4, 0, 0, 1]
+  ];
+
+  const initialBoard = userBoard
+    ? userBoard.map(r => [...r])
+    : (N === 4 ? DEFAULT_4x4 : DEFAULT_9x9).map(r => [...r]);
+
+  steps.push({
+    board: initialBoard.map(r => [...r]),
+    explanation: "Start",
+    description: `Starting ${N}×${N} Sudoku Solver`,
+    row: -1, col: -1, movesLog: []
+  });
+
+  function isValid(board, row, col, num) {
+    for (let i = 0; i < N; i++) {
+      if (board[row][i] === num) return false;
+      if (board[i][col] === num) return false;
+      const br = boxSize * Math.floor(row / boxSize) + Math.floor(i / boxSize);
+      const bc = boxSize * Math.floor(col / boxSize) + i % boxSize;
+      if (board[br][bc] === num) return false;
     }
+    return true;
+  }
 
-    function solve(board) {
-        for (let row = 0; row < 9; row++) {
-            for (let col = 0; col < 9; col++) {
-                if (board[row][col] === 0) {
-                    for (let num = 1; num <= 9; num++) {
-                        if (isValid(board, row, col, num)) {
-                            board[row][col] = num;
+  function solve(board) {
+    for (let row = 0; row < N; row++) {
+      for (let col = 0; col < N; col++) {
+        if (board[row][col] === 0) {
+          for (let num = 1; num <= N; num++) {
+            if (isValid(board, row, col, num)) {
+              board[row][col] = num;
+              movesLog.push({ step: movesLog.length + 1, action: 'Place', row: row + 1, col: col + 1, value: num });
+              steps.push({
+                board: board.map(r => [...r]),
+                explanation: "Place",
+                description: `Placing ${num} at (${row + 1}, ${col + 1})`,
+                row, col, movesLog: movesLog.map(m => ({ ...m }))
+              });
 
-                            steps.push({
-                                board: JSON.parse(JSON.stringify(board)),
-                                explanation: "Place",
-                                description: `Placing ${num} at (${row + 1}, ${col + 1})`,
-                                row: row,
-                                col: col
-                            });
+              if (solve(board)) return true;
 
-                            if (solve(board)) {
-                                return true;
-                            }
-
-                            board[row][col] = 0;
-                            steps.push({
-                                board: JSON.parse(JSON.stringify(board)),
-                                explanation: "Backtrack",
-                                description: `Backtracking from (${row + 1}, ${col + 1})`,
-                                row: row,
-                                col: col
-                            });
-                        }
-                    }
-                    return false;
-                }
+              board[row][col] = 0;
+              movesLog.push({ step: movesLog.length + 1, action: 'Backtrack', row: row + 1, col: col + 1, value: num });
+              steps.push({
+                board: board.map(r => [...r]),
+                explanation: "Backtrack",
+                description: `Backtracking from (${row + 1}, ${col + 1})`,
+                row, col, movesLog: movesLog.map(m => ({ ...m }))
+              });
             }
+          }
+          return false;
         }
-        return true;
+      }
     }
+    return true;
+  }
 
-    const boardCopy = JSON.parse(JSON.stringify(initialBoard));
-    solve(boardCopy);
+  const boardCopy = initialBoard.map(r => [...r]);
+  solve(boardCopy);
 
-    steps.push({
-        board: boardCopy,
-        explanation: "Complete",
-        description: "Sudoku Solved Successfully",
-        row: -1,
-        col: -1
-    });
+  steps.push({
+    board: boardCopy,
+    explanation: "Complete",
+    description: `${N}×${N} Sudoku Solved!`,
+    row: -1, col: -1, movesLog: movesLog.map(m => ({ ...m }))
+  });
 
-    return steps;
+  return steps;
 }
-

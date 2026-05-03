@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { getMergeSortAnimations, generateRandomArray } from '../algorithms/mergeSort';
 
@@ -18,7 +17,7 @@ const LEGEND = [
 
 export default function MergeSortVisualizer() {
   const [length,    setLength]    = useState(30);
-  const [speed,     setSpeed]     = useState(50);
+  const [speed,     setSpeed]     = useState(2);
   const [array,     setArray]     = useState([]);
   const [colors,    setColors]    = useState([]);
   const [isSorting, setIsSorting] = useState(false);
@@ -30,7 +29,10 @@ export default function MergeSortVisualizer() {
   const timers   = useRef([]);
   const pauseRef = useRef(false);
 
-  const getDelay = (s) => Math.round(MAX_D - ((s - 1) / 99) * (MAX_D - MIN_D));
+  const speedVals   = { 1: 1000, 2: 400, 3: 100, 4: 10 };
+  const speedLabels = { 1: "Slow", 2: "Medium", 3: "Fast", 4: "Instant" };
+  const getDelay    = () => speedVals[speed] || 400;
+
   const clearTimers = () => { timers.current.forEach(clearTimeout); timers.current = []; };
 
   const applyArray = useCallback((arr) => {
@@ -38,7 +40,7 @@ export default function MergeSortVisualizer() {
     setArray(arr); setColors(new Array(arr.length).fill(BAR.DEFAULT));
     setIsSorting(false); setIsPaused(false); setIsSorted(false);
     pauseRef.current = false;
-    setStep('Array ready. Press ▶ Start to begin sorting.'); setStepType('idle');
+    setStep('Array ready. Press Start to begin sorting.'); setStepType('idle');
   }, []);
 
   const resetArray = useCallback((len = length) => {
@@ -57,24 +59,28 @@ export default function MergeSortVisualizer() {
     applyArray(parsed.slice(0, MAX_BARS)); setInputVal('');
   };
 
-  const handleStop = () => {
+  const stopSortInternal = () => {
     clearTimers(); setIsSorting(false); setIsPaused(false); pauseRef.current = false;
-    setStep('⏹ Stopped. Press ↺ Reset to start over.'); setStepType('idle');
+  }
+
+  const handleStop = () => {
+    stopSortInternal();
+    setStep('Stopped.'); setStepType('idle');
   };
 
   const handlePause = () => {
     if (!isSorting) return;
     const next = !isPaused; setIsPaused(next); pauseRef.current = next;
-    setStep(next ? '⏸ Paused. Press Resume to continue.' : '▶ Resuming…'); setStepType('idle');
+    setStep(next ? 'Paused...' : 'Resuming...'); setStepType('idle');
   };
 
   const handleSort = () => {
     if (isSorting || isSorted) return;
     setIsSorting(true); setIsPaused(false); pauseRef.current = false;
-    setStep('Starting Merge Sort — splitting array into halves…'); setStepType('');
+    setStep('Starting Merge Sort...'); setStepType('');
 
     const animations = getMergeSortAnimations(array.slice());
-    const delay = getDelay(speed);
+    const delay = getDelay();
     const arr = array.slice();
     let t = 0;
 
@@ -92,7 +98,7 @@ export default function MergeSortVisualizer() {
         schedule(() => {
           const [i, j] = anim.indices;
           setColors(prev => { const n=[...prev]; n[i]=BAR.COMPARE; if(i!==j) n[j]=BAR.COMPARE; return n; });
-          setStep(`Step: Comparing position ${i} (value ${arr[i]}) with position ${j} (value ${arr[j]})`); setStepType('');
+          setStep(`Comparing ${arr[i]} and ${arr[j]}`); setStepType('');
         }, d);
       } else if (anim.type === 'revert') {
         schedule(() => {
@@ -104,7 +110,7 @@ export default function MergeSortVisualizer() {
           const [idx] = anim.indices;
           arr[idx] = anim.value; setArray([...arr]);
           setColors(prev => { const n=[...prev]; n[idx]=BAR.OVERWRITE; return n; });
-          setStep(`Step: Writing value ${anim.value} into position ${idx} — merging sorted sub-arrays.`); setStepType('');
+          setStep(`Writing value ${anim.value} at index ${idx}`); setStepType('');
           const rid = setTimeout(() => { setColors(prev => { const n=[...prev]; if(n[idx]!==BAR.SORTED) n[idx]=BAR.DEFAULT; return n; }); }, delay * 5);
           timers.current.push(rid);
         }, d);
@@ -115,50 +121,48 @@ export default function MergeSortVisualizer() {
     schedule(() => {
       setColors(new Array(arr.length).fill(BAR.SORTED));
       setIsSorting(false); setIsSorted(true);
-      setStep('✅ Array fully sorted! Merge Sort complete.'); setStepType('success');
+      setStep('✅ Array fully sorted!'); setStepType('success');
     }, t * delay + 200);
+  };
+
+  const handleRestart = () => {
+    stopSortInternal();
+    setIsSorted(false);
+    setTimeout(() => handleSort(), 50);
   };
 
   const maxVal = Math.max(...array, 1);
   const showNums = length <= 40;
 
   return (
-    <>
-      <div className="viz-section-title">Merge Sort Visualization</div>
+    <div className="visualizer">
+      <h2>Merge Sort Visualizer</h2>
 
-      <div className="input-row">
-        <input className="input-text" placeholder="Enter array (e.g. 30,10,50,20,40)"
-          value={inputVal} onChange={e => setInputVal(e.target.value)}
-          disabled={isSorting} onKeyDown={e => e.key === 'Enter' && handleAddArray()} />
-        <button className="btn btn-primary" onClick={handleAddArray} disabled={isSorting}>Add Your Array</button>
-        <button className="btn btn-success" onClick={() => resetArray()} disabled={isSorting}>Generate Random Array</button>
+      <div className="controls input-controls">
+        <input
+          type="text"
+          placeholder="e.g. 50, 30, 80, 20"
+          value={inputVal}
+          onChange={(e) => setInputVal(e.target.value)}
+          disabled={isSorting}
+          onKeyDown={(e) => e.key === 'Enter' && handleAddArray()}
+        />
+        <button onClick={handleAddArray} disabled={isSorting} className="btn btn-secondary">Load Array</button>
+        <button onClick={() => resetArray()} disabled={isSorting} className="btn btn-secondary">Randomize</button>
       </div>
 
-      <div className="input-row">
-        <div className="slider-group">
-          <label>Speed</label>
-          <input type="range" min="1" max="100" value={speed} disabled={isSorting} onChange={e => setSpeed(+e.target.value)} />
-        </div>
-        <div className="slider-group">
-          <label>Array Length: {length}</label>
-          <input type="range" min={MIN_BARS} max={MAX_BARS} value={length} disabled={isSorting} onChange={handleLengthChange} />
-        </div>
-      </div>
-
-      <div className="controls-row">
-        <button className="btn btn-primary"   onClick={handleSort}  disabled={isSorting || isSorted}>▶ Start</button>
-        <button className="btn btn-warning"   onClick={handlePause} disabled={!isSorting}>{isPaused ? '▶ Resume' : '⏸ Pause'}</button>
-        <button className="btn btn-danger"    onClick={handleStop}  disabled={!isSorting}>⏹ Stop</button>
-        <button className="btn btn-secondary" onClick={() => resetArray()} disabled={isSorting}>↺ Reset</button>
-      </div>
-
-      <div className="legend-row">
-        {LEGEND.map(({ color, label }) => (
-          <div key={label} className="legend-item">
-            <div className="legend-dot" style={{ background: color }} />
-            <span>{label}</span>
-          </div>
+      <div className="speed-control">
+        <span className="speed-label">Speed:</span>
+        {[1, 2, 3, 4].map((s) => (
+          <button key={s} className={`btn btn-speed ${speed === s ? "active" : ""}`} onClick={() => setSpeed(s)}>
+            {speedLabels[s]}
+          </button>
         ))}
+      </div>
+
+      <div className="controls input-controls" style={{ marginTop: '10px' }}>
+        <span style={{ marginRight: '10px' }}>Array Length: {length}</span>
+        <input type="range" min={MIN_BARS} max={MAX_BARS} value={length} disabled={isSorting} onChange={handleLengthChange} />
       </div>
 
       <div className="viz-canvas">
@@ -172,9 +176,25 @@ export default function MergeSortVisualizer() {
         </div>
       </div>
 
-      <div className={`step-panel ${stepType}`}>
-        {step || 'Press ▶ Start to begin the visualization.'}
+      <div className="legend-row">
+        {LEGEND.map(({ color, label }) => (
+          <div key={label} className="legend-item">
+            <div className="legend-dot" style={{ background: color }} />
+            <span>{label}</span>
+          </div>
+        ))}
       </div>
-    </>
+
+      <div className="controls playback-controls">
+        <button onClick={handleSort} disabled={isSorting || isSorted} className="btn btn-primary">Start</button>
+        <button onClick={handlePause} disabled={!isSorting} className="btn btn-secondary">{isPaused ? "Resume" : "Pause"}</button>
+        <button onClick={handleStop} disabled={!isSorting && !isPaused} className="btn btn-danger">Stop</button>
+        <button onClick={handleRestart} disabled={!isSorting && !isPaused && !isSorted} className="btn btn-secondary">Restart</button>
+      </div>
+
+      <div className={`step-panel ${stepType}`}>
+        {step || 'Press Start to begin the visualization.'}
+      </div>
+    </div>
   );
 }

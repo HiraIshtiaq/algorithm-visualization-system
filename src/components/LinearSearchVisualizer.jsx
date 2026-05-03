@@ -7,10 +7,13 @@ function LinearSearchVisualizer() {
     const [steps, setSteps] = useState([])
     const [currentStep, setCurrentStep] = useState(0)
     const [isPlaying, setIsPlaying] = useState(false)
-    const [speed, setSpeed] = useState(800)
+    const [speed, setSpeed] = useState(2)
+
+    const speedVals   = { 1: 1500, 2: 800, 3: 300, 4: 50 };
+    const speedLabels = { 1: "Slow", 2: "Medium", 3: "Fast", 4: "Instant" };
     const timerRef = useRef(null)
 
-    const stopAnimation = () => {
+    const stopAnimationInternal = () => {
         if (timerRef.current) {
             clearInterval(timerRef.current)
             timerRef.current = null
@@ -18,82 +21,59 @@ function LinearSearchVisualizer() {
         setIsPlaying(false)
     }
 
-    const startAnimation = () => {
-        if (steps.length === 0) return
-        if (currentStep >= steps.length - 1) return
+    const stopAnimation = () => {
+        stopAnimationInternal()
+    }
+
+    const startAnimation = (stepList) => {
+        if (!stepList || stepList.length === 0) return
         setIsPlaying(true)
         timerRef.current = setInterval(() => {
             setCurrentStep(prev => {
-                if (prev + 1 >= steps.length) {
-                    stopAnimation()
+                if (prev + 1 >= stepList.length) {
+                    stopAnimationInternal()
                     return prev
                 }
                 return prev + 1
             })
-        }, speed)
+        }, speedVals[speed] || 800)
     }
 
-    const pauseAnimation = () => stopAnimation()
-    const resumeAnimation = startAnimation
-
-    const restartAnimation = () => {
-        stopAnimation()
-        setCurrentStep(0)
-        if (steps.length > 0) {
-            setIsPlaying(true)
-            timerRef.current = setInterval(() => {
-                setCurrentStep(prev => {
-                    if (prev + 1 >= steps.length) {
-                        stopAnimation()
-                        return prev
-                    }
-                    return prev + 1
-                })
-            }, speed)
-        }
+    const pauseAnimation = () => stopAnimationInternal()
+    const resumeAnimation = () => {
+        if (steps.length === 0 || currentStep >= steps.length - 1) return
+        startAnimation(steps)
     }
 
     useEffect(() => {
-        return () => stopAnimation()
+        return () => stopAnimationInternal()
     }, [])
 
     useEffect(() => {
         if (steps.length > 0 && currentStep === steps.length - 1) {
-            stopAnimation()
+            stopAnimationInternal()
         }
     }, [currentStep, steps.length])
 
-    const getMaxValue = (arr) => Math.max(...arr, 10)
-
     const startSearch = () => {
-        stopAnimation()
-        try {
-            const arr = inputArray.split(',').map(n => parseInt(n.trim()))
-            if (arr.some(isNaN)) {
-                alert('Please enter valid numbers only')
-                return
-            }
-            const result = linearSearch(arr, target)
-            setSteps(result)
-            setCurrentStep(0)
-            setIsPlaying(true)
-            timerRef.current = setInterval(() => {
-                setCurrentStep(prev => {
-                    if (prev + 1 >= result.length) {
-                        stopAnimation()
-                        return prev
-                    }
-                    return prev + 1
-                })
-            }, speed)
-        } catch (error) {
-            alert('Please enter numbers like: 5, 3, 8, 1, 9, 2')
-        }
+        stopAnimationInternal()
+        const arr = inputArray.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n))
+        if (arr.length === 0) return
+        const result = linearSearch(arr, target)
+        setSteps(result)
+        setCurrentStep(0)
+        startAnimation(result)
+    }
+
+    const handleRestart = () => {
+        stopAnimationInternal()
+        setCurrentStep(0)
+        setTimeout(() => startSearch(), 50)
     }
 
     const generateRandomArray = () => {
-        stopAnimation()
-        const random = Array.from({ length: 6 }, () => Math.floor(Math.random() * 20) + 1)
+        stopAnimationInternal()
+        const random = Array.from({ length: 8 }, () => Math.floor(Math.random() * 20) + 1)
         setInputArray(random.join(', '))
         setSteps([])
         setCurrentStep(0)
@@ -107,33 +87,46 @@ function LinearSearchVisualizer() {
         found: []
     }
 
+    const getMaxValue = (arr) => Math.max(...arr, 1)
     const maxValue = getMaxValue(currentStepData.array)
     const maxHeight = 250
 
     return (
         <div className="visualizer">
-            <div className="input-section">
-                <div className="input-row">
-                    <label>Array:</label>
-                    <input type="text" value={inputArray} onChange={(e) => setInputArray(e.target.value)} />
-                    <button className="small-btn" onClick={generateRandomArray}>Random</button>
-                </div>
-                <div className="input-row">
-                    <label>Target:</label>
-                    <input type="number" value={target} onChange={(e) => setTarget(e.target.value)} />
-                </div>
+            <h2>Linear Search Visualizer</h2>
+            <div className="controls input-controls">
+                <input 
+                    type="text" 
+                    value={inputArray} 
+                    onChange={(e) => setInputArray(e.target.value)}
+                    placeholder="e.g. 5, 3, 8, 1, 9, 2"
+                    disabled={isPlaying}
+                />
+                <button onClick={generateRandomArray} disabled={isPlaying} className="btn btn-secondary">Randomize</button>
+            </div>
+            
+            <div className="controls input-controls" style={{ marginTop: '10px' }}>
+                <span style={{ marginRight: '10px' }}>Target:</span>
+                <input 
+                    type="number" 
+                    value={target} 
+                    onChange={(e) => setTarget(e.target.value)} 
+                    disabled={isPlaying}
+                    style={{ width: '100px' }}
+                />
             </div>
 
-            <div className="controls-row">
-                <button className="control-btn start" onClick={startSearch}>Start</button>
-                <button className="control-btn pause" onClick={pauseAnimation}>Pause</button>
-                <button className="control-btn resume" onClick={resumeAnimation}>Resume</button>
-                <button className="control-btn restart" onClick={restartAnimation}>Restart</button>
-                <div className="speed-control">
-                    <label>Speed:</label>
-                    <input type="range" min="300" max="1500" step="50" value={speed} onChange={(e) => setSpeed(parseInt(e.target.value))} />
-                    <span>{speed}ms</span>
-                </div>
+            <div className="speed-control">
+                <span className="speed-label">Speed:</span>
+                {[1, 2, 3, 4].map((s) => (
+                    <button
+                        key={s}
+                        className={`btn btn-speed ${speed === s ? "active" : ""}`}
+                        onClick={() => setSpeed(s)}
+                    >
+                        {speedLabels[s]}
+                    </button>
+                ))}
             </div>
 
             {steps.length > 0 && (
@@ -161,6 +154,15 @@ function LinearSearchVisualizer() {
                     </div>
                 </div>
             )}
+
+            <div className="controls playback-controls">
+                <button onClick={startSearch} disabled={isPlaying} className="btn btn-primary">Start</button>
+                <button onClick={isPlaying ? pauseAnimation : resumeAnimation} disabled={steps.length === 0} className="btn btn-secondary">
+                    {isPlaying ? "Pause" : "Resume"}
+                </button>
+                <button onClick={stopAnimation} disabled={steps.length === 0} className="btn btn-danger">Stop</button>
+                <button onClick={handleRestart} disabled={steps.length === 0} className="btn btn-secondary">Restart</button>
+            </div>
         </div>
     )
 }

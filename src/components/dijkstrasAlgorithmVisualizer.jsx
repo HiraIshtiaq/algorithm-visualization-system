@@ -32,7 +32,7 @@ const edgeKey = (a, b) => [a, b].sort().join('--');
 
 export default function DijkstrasVisualizer() {
   const [graphKey,   setGraphKey]   = useState('simple');
-  const [speed,      setSpeed]      = useState(60);
+  const [speed,      setSpeed]      = useState(2);
   const [nodeStates, setNodeStates] = useState({});
   const [edgeStates, setEdgeStates] = useState({});
   const [distMap,    setDistMap]    = useState({});
@@ -44,7 +44,9 @@ export default function DijkstrasVisualizer() {
   const timers   = useRef([]);
   const pauseRef = useRef(false);
 
-  const getDelay    = (s) => Math.round(700 - ((s - 1) / 99) * 680);
+  const speedVals   = { 1: 680, 2: 350, 3: 120, 4: 20 };
+  const speedLabels = { 1: "Slow", 2: "Medium", 3: "Fast", 4: "Instant" };
+  const getDelay    = () => speedVals[speed] || 350;
   const clearTimers = () => { timers.current.forEach(clearTimeout); timers.current = []; };
 
   const graph = SAMPLE_GRAPHS[graphKey];
@@ -83,7 +85,7 @@ export default function DijkstrasVisualizer() {
     setStep(`Starting Dijkstra's from node ${g.start} → finding shortest path to node ${g.end}…`); setStepType('');
 
     const { animations, dist, path } = getDijkstraAnimations(g, g.start, g.end);
-    const delay = getDelay(speed);
+    const delay = getDelay();
     let t = 0;
 
     const schedule = (fn, d) => {
@@ -170,8 +172,7 @@ export default function DijkstrasVisualizer() {
     <>
       <div className="viz-section-title">Dijkstra's Algorithm Visualization</div>
 
-      {/* Graph selector + speed */}
-      <div className="input-row">
+      <div className="controls input-controls">
         <select
           style={{ padding: '8px 14px', borderRadius: 6, border: '1px solid #bbb', fontSize: 13, fontFamily: 'inherit', background: '#fff', color: '#1a1a2e', cursor: 'pointer' }}
           value={graphKey} disabled={isRunning} onChange={handleGraphChange}>
@@ -179,17 +180,22 @@ export default function DijkstrasVisualizer() {
             <option key={k} value={k}>{g.label}</option>
           ))}
         </select>
-        <div className="slider-group">
-          <label>Speed</label>
-          <input type="range" min="1" max="100" value={speed} disabled={isRunning} onChange={e => setSpeed(+e.target.value)} />
-        </div>
       </div>
 
-      <div className="controls-row">
-        <button className="btn btn-primary"   onClick={handleStart}  disabled={isRunning || isDone}>▶ Start</button>
-        <button className="btn btn-warning"   onClick={handlePause}  disabled={!isRunning}>{isPaused ? '▶ Resume' : '⏸ Pause'}</button>
-        <button className="btn btn-danger"    onClick={handleStop}   disabled={!isRunning}>⏹ Stop</button>
-        <button className="btn btn-secondary" onClick={() => resetViz()} disabled={isRunning}>↺ Reset</button>
+      <div className="speed-control">
+        <span className="speed-label">Speed:</span>
+        {[1, 2, 3, 4].map((s) => (
+          <button key={s} className={`btn btn-speed ${speed === s ? "active" : ""}`} onClick={() => setSpeed(s)} disabled={isRunning}>
+            {speedLabels[s]}
+          </button>
+        ))}
+      </div>
+
+      <div className="controls playback-controls">
+        <button className="btn btn-primary"   onClick={handleStart}  disabled={isRunning || isDone}>Start</button>
+        <button className="btn btn-secondary" onClick={handlePause}  disabled={!isRunning}>{isPaused ? 'Resume' : 'Pause'}</button>
+        <button className="btn btn-danger"    onClick={handleStop}   disabled={!isRunning && !isPaused}>Stop</button>
+        <button className="btn btn-secondary" onClick={() => { resetViz(); setTimeout(() => handleStart(), 50); }} disabled={isRunning}>Restart</button>
       </div>
 
       <div className="legend-row">

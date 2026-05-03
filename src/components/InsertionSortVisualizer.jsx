@@ -4,25 +4,28 @@ import { insertionSort } from "../algorithms/insertionSort";
 function InsertionSortVisualizer() {
 
   // ── State ──────────────────────────────────────
-  const [array, setArray]           = useState([]);
+  const [array, setArray]           = useState([40, 10, 30, 20, 60]);
   const [arrayInput, setArrayInput] = useState("");
 
   const [currentIndex, setCurrentIndex]   = useState(null); // orange box
   const [compareIndex, setCompareIndex]   = useState(null); // red box
   const [sortedIndices, setSortedIndices] = useState([]);   // green boxes
 
-  const [message, setMessage]     = useState("");
+  const [message, setMessage]     = useState("Ready to sort.");
   const [isSorting, setIsSorting] = useState(false);
   const [isPaused, setIsPaused]   = useState(false);
-  const [speed, setSpeed]         = useState(500);
+  const [speed, setSpeed]         = useState(2);
 
   // ── Refs (readable inside async algorithm) ─────
   const isPausedRef  = useRef(false);
   const isStoppedRef = useRef(false);
-  const speedRef     = useRef(500);
+  const speedRef     = useRef(2);
+
+  const speedVals   = { 1: 1000, 2: 600, 3: 200, 4: 50 };
+  const speedLabels = { 1: "Slow", 2: "Medium", 3: "Fast", 4: "Instant" };
 
   function getDelay() {
-    return speedRef.current;
+    return speedVals[speedRef.current] || 600;
   }
 
   // ── Reset highlights ───────────────────────────
@@ -30,34 +33,35 @@ function InsertionSortVisualizer() {
     setCurrentIndex(null);
     setCompareIndex(null);
     setSortedIndices([]);
-    setMessage("");
   }
 
   // ── Generate a random array ────────────────────
   function generateRandomArray() {
-    stopSort();
+    stopSortInternal();
     let arr = [];
     for (let i = 0; i < 10; i++) {
       arr.push(Math.floor(Math.random() * 90) + 10);
     }
     setArray(arr);
     resetVisuals();
+    setMessage("Random array generated.");
   }
 
   // ── Load array typed by user ───────────────────
   function loadUserArray() {
-    stopSort();
+    stopSortInternal();
     let arr = arrayInput
       .split(",")
       .map(num => parseInt(num.trim()))
       .filter(num => !isNaN(num));
+    if (arr.length === 0) return setMessage("No valid numbers. Use format: 40,10,30");
     setArray(arr);
     resetVisuals();
+    setMessage("Custom array loaded.");
   }
 
   // ── Start sorting ──────────────────────────────
   async function startSort() {
-
     if (array.length === 0) {
       setMessage("Please generate or add array first");
       return;
@@ -68,6 +72,7 @@ function InsertionSortVisualizer() {
     setIsPaused(false);
     setIsSorting(true);
     resetVisuals();
+    setMessage("Sorting...");
 
     await insertionSort(
       array,
@@ -100,24 +105,25 @@ function InsertionSortVisualizer() {
   }
 
   // ── Stop ───────────────────────────────────────
-  function stopSort() {
+  const stopSortInternal = () => {
     isStoppedRef.current = true;
     isPausedRef.current  = false;
     setIsSorting(false);
     setIsPaused(false);
     resetVisuals();
+  }
+
+  function stopSort() {
+    stopSortInternal();
     setMessage("Stopped.");
   }
 
-  // ── Speed label ────────────────────────────────
-  function getSpeedLabel() {
-    if (speed <= 200) return "Fast";
-    if (speed <= 600) return "Medium";
-    return "Slow";
+  function handleRestart() {
+    stopSortInternal();
+    setTimeout(() => startSort(), 50);
   }
 
-  function handleSpeedChange(e) {
-    const val = Number(e.target.value);
+  function handleSpeedChange(val) {
     setSpeed(val);
     speedRef.current = val;
   }
@@ -132,59 +138,38 @@ function InsertionSortVisualizer() {
 
   // ── Render ─────────────────────────────────────
   return (
-
     <div className="visualizer">
+      <h2>Insertion Sort Visualizer</h2>
 
-      <h2>Insertion Sort Visualization</h2>
-
-      {/* Row 1 — Array input */}
-      <div className="controls">
+      <div className="controls input-controls">
         <input
           type="text"
-          placeholder="Enter array (e.g. 40,10,30,20)"
+          placeholder="e.g. 40, 10, 30, 20"
           value={arrayInput}
           onChange={(e) => setArrayInput(e.target.value)}
+          disabled={isSorting}
         />
-        <button onClick={loadUserArray} disabled={isSorting}>
-          Add Your Array
+        <button onClick={loadUserArray} disabled={isSorting} className="btn btn-secondary">
+          Load Array
         </button>
-        <button onClick={generateRandomArray} disabled={isSorting}>
-          Generate Random Array
-        </button>
-      </div>
-
-      {/* Row 2 — Start / Pause / Stop */}
-      <div className="controls">
-        <button onClick={startSort} disabled={isSorting}>
-          Start Sort
-        </button>
-        {!isPaused ? (
-          <button onClick={pauseSort} disabled={!isSorting}>Pause</button>
-        ) : (
-          <button onClick={resumeSort}>Resume</button>
-        )}
-        <button onClick={stopSort} disabled={!isSorting && !isPaused}>
-          Stop
+        <button onClick={generateRandomArray} disabled={isSorting} className="btn btn-secondary">
+          Randomize
         </button>
       </div>
 
-      {/* Row 3 — Speed slider */}
-      <div className="controls">
-        <div className="speed-label">
-          <span>Speed: <strong>{getSpeedLabel()}</strong></span>
-          <div className="speed-row">
-            <span>Fast</span>
-            <input
-              type="range" min="100" max="1000" step="100"
-              value={speed}
-              onChange={handleSpeedChange}
-            />
-            <span>Slow</span>
-          </div>
-        </div>
+      <div className="speed-control">
+        <span className="speed-label">Speed:</span>
+        {[1, 2, 3, 4].map((s) => (
+          <button
+            key={s}
+            className={`btn btn-speed ${speed === s ? "active" : ""}`}
+            onClick={() => handleSpeedChange(s)}
+          >
+            {speedLabels[s]}
+          </button>
+        ))}
       </div>
 
-      {/* Array boxes */}
       <div className="binary-container">
         {array.map((value, index) => (
           <div key={index} className={getBoxClass(index)}>
@@ -193,12 +178,30 @@ function InsertionSortVisualizer() {
         ))}
       </div>
 
+      <div className="bfs-legend">
+        <span><span className="bfs-dot" style={{ background: "#f5a623" }} /> Key (Current)</span>
+        <span><span className="bfs-dot" style={{ background: "#e74c3c" }} /> Comparing</span>
+        <span><span className="bfs-dot" style={{ background: "#2ecc71" }} /> Sorted Portion</span>
+      </div>
+
+      <div className="controls playback-controls">
+        <button onClick={startSort} disabled={isSorting} className="btn btn-primary">
+          Start
+        </button>
+        <button onClick={isPaused ? resumeSort : pauseSort} disabled={!isSorting} className="btn btn-secondary">
+          {isPaused ? "Resume" : "Pause"}
+        </button>
+        <button onClick={stopSort} disabled={!isSorting && !isPaused} className="btn btn-danger">
+          Stop
+        </button>
+        <button onClick={handleRestart} disabled={!isSorting && !isPaused} className="btn btn-secondary">
+          Restart
+        </button>
+      </div>
+
       <p className="binary-message">{message}</p>
-
     </div>
-
   );
-
 }
 
 export default InsertionSortVisualizer;

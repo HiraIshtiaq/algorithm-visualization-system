@@ -60,43 +60,48 @@ function App() {
     const categories = {
         "Sorting": {
             algorithms: ["Bubble Sort", "Insertion Sort", "Quick Sort", "Heap Sort", "Merge Sort"],
+            showStable: true,
             data: {
-                "Bubble Sort": { best: "O(n)", avg: "O(n²)", worst: "O(n²)", space: "O(1)", stable: "Yes" },
-                "Insertion Sort": { best: "O(n)", avg: "O(n²)", worst: "O(n²)", space: "O(1)", stable: "Yes" },
-                "Quick Sort": { best: "O(n log n)", avg: "O(n log n)", worst: "O(n²)", space: "O(log n)", stable: "No" },
-                "Heap Sort": { best: "O(n log n)", avg: "O(n log n)", worst: "O(n log n)", space: "O(1)", stable: "No" },
-                "Merge Sort": { best: "O(n log n)", avg: "O(n log n)", worst: "O(n log n)", space: "O(n)", stable: "Yes" },
+                "Bubble Sort":    { best: "O(n)",       avg: "O(n²)",      worst: "O(n²)",      space: "O(1)",    stable: "Yes" },
+                "Insertion Sort": { best: "O(n)",       avg: "O(n²)",      worst: "O(n²)",      space: "O(1)",    stable: "Yes" },
+                "Quick Sort":     { best: "O(n log n)", avg: "O(n log n)", worst: "O(n²)",      space: "O(log n)",stable: "No"  },
+                "Heap Sort":      { best: "O(n log n)", avg: "O(n log n)", worst: "O(n log n)", space: "O(1)",    stable: "No"  },
+                "Merge Sort":     { best: "O(n log n)", avg: "O(n log n)", worst: "O(n log n)", space: "O(n)",    stable: "Yes" },
             }
         },
         "Searching": {
             algorithms: ["Linear Search", "Binary Search"],
+            showStable: false,
             data: {
-                "Linear Search": { best: "O(1)", avg: "O(n)", worst: "O(n)", space: "O(1)", stable: "—" },
-                "Binary Search": { best: "O(1)", avg: "O(log n)", worst: "O(log n)", space: "O(1)", stable: "—" },
+                "Linear Search": { best: "O(1)",     avg: "O(n)",     worst: "O(n)",     space: "O(1)" },
+                "Binary Search": { best: "O(1)",     avg: "O(log n)", worst: "O(log n)", space: "O(1)" },
             }
         },
         "Graph": {
             algorithms: ["Breadth-First Search", "Depth-First Search", "Dijkstra's Algorithm", "Kruskal's Algorithm", "Prim's Algorithm"],
+            showStable: false,
             data: {
-                "Breadth-First Search": { best: "O(V+E)", avg: "O(V+E)", worst: "O(V+E)", space: "O(V)", stable: "—" },
-                "Depth-First Search": { best: "O(V+E)", avg: "O(V+E)", worst: "O(V+E)", space: "O(V)", stable: "—" },
-                "Dijkstra's Algorithm": { best: "O(E log V)", avg: "O(E log V)", worst: "O(E log V)", space: "O(V)", stable: "—" },
-                "Kruskal's Algorithm": { best: "O(E log E)", avg: "O(E log E)", worst: "O(E log E)", space: "O(V+E)", stable: "—" },
-                "Prim's Algorithm": { best: "O(E log V)", avg: "O(E log V)", worst: "O(E log V)", space: "O(V)", stable: "—" },
+                "Breadth-First Search": { best: "O(V+E)",   avg: "O(V+E)",   worst: "O(V+E)",   space: "O(V)"   },
+                "Depth-First Search":   { best: "O(V+E)",   avg: "O(V+E)",   worst: "O(V+E)",   space: "O(V)"   },
+                "Dijkstra's Algorithm": { best: "O(E log V)",avg: "O(E log V)",worst: "O(E log V)",space: "O(V)" },
+                "Kruskal's Algorithm":  { best: "O(E log E)",avg: "O(E log E)",worst: "O(E log E)",space: "O(V+E)"},
+                "Prim's Algorithm":     { best: "O(E log V)",avg: "O(E log V)",worst: "O(E log V)",space: "O(V)" },
             }
         },
         "Dynamic Programming": {
             algorithms: ["Coin Change Problem", "0/1 Knapsack Problem"],
+            showStable: false,
             data: {
-                "Coin Change Problem": { best: "O(n·m)", avg: "O(n·m)", worst: "O(n·m)", space: "O(n)", stable: "—" },
-                "0/1 Knapsack Problem": { best: "O(n·W)", avg: "O(n·W)", worst: "O(n·W)", space: "O(n·W)", stable: "—" },
+                "Coin Change Problem":   { best: "O(n·m)", avg: "O(n·m)", worst: "O(n·m)", space: "O(n)"   },
+                "0/1 Knapsack Problem":  { best: "O(n·W)", avg: "O(n·W)", worst: "O(n·W)", space: "O(n·W)" },
             }
         },
         "Backtracking": {
             algorithms: ["N-Queens Problem", "Sudoku Solver"],
+            showStable: false,
             data: {
-                "N-Queens Problem": { best: "O(n!)", avg: "O(n!)", worst: "O(n!)", space: "O(n)", stable: "—" },
-                "Sudoku Solver": { best: "O(9^m)", avg: "O(9^m)", worst: "O(9^m)", space: "O(m)", stable: "—" },
+                "N-Queens Problem": { best: "O(n!)",  avg: "O(n!)",  worst: "O(n!)",  space: "O(n)" },
+                "Sudoku Solver":    { best: "O(9^m)", avg: "O(9^m)", worst: "O(9^m)", space: "O(m)" },
             }
         },
     };
@@ -203,7 +208,7 @@ function App() {
                                         <th>Average Case</th>
                                         <th>Worst Case</th>
                                         <th>Space</th>
-                                        <th>Stable</th>
+                                        {categories[compareCategory].showStable && <th>Stable</th>}
                                         <th>Visualize</th>
                                     </tr>
                                 </thead>
@@ -217,7 +222,7 @@ function App() {
                                                 <td><span className="complexity-badge avg">{d.avg}</span></td>
                                                 <td><span className="complexity-badge worst">{d.worst}</span></td>
                                                 <td><span className="complexity-badge space">{d.space}</span></td>
-                                                <td>{d.stable}</td>
+                                                {categories[compareCategory].showStable && <td>{d.stable}</td>}
                                                 <td>
                                                     {algorithmPages[algo] ? (
                                                         <button className="compare-link-btn" onClick={() => setPage(algo)}>

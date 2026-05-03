@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { bubbleSort } from "../algorithms/bubbleSort";
 
@@ -33,25 +32,30 @@ function BubbleSortVisualizer() {
     });
   }
 
+  function resetState() {
+    setSorted([]);
+    setActive([]);
+  }
+
   function generateRandomArray() {
+    stopSort();
     const arr = Array.from({ length: 10 }, () =>
       Math.floor(Math.random() * 180) + 20
     );
     setArray(arr);
-    setSorted([]);
-    setActive([]);
+    resetState();
     setMessage("Random array generated.");
   }
 
   function loadUserArray() {
+    stopSort();
     const arr = arrayInput
       .split(",")
       .map((n) => parseInt(n.trim()))
       .filter((n) => !isNaN(n));
-    if (arr.length === 0) return setMessage("No valid numbers found.");
+    if (arr.length === 0) return setMessage("No valid numbers found. Use format: 50,30,80");
     setArray(arr);
-    setSorted([]);
-    setActive([]);
+    resetState();
     setMessage("Custom array loaded.");
   }
 
@@ -62,8 +66,7 @@ function BubbleSortVisualizer() {
     stopRef.current = false;
     setIsPaused(false);
     setIsRunning(true);
-    setSorted([]);
-    setActive([]);
+    resetState();
     setMessage("Sorting...");
 
     const result = await bubbleSort(
@@ -93,10 +96,22 @@ function BubbleSortVisualizer() {
     });
   }
 
-  function handleStop() {
+  const stopSort = () => {
     stopRef.current = true;
+    pauseRef.current = false;
     setIsRunning(false);
     setIsPaused(false);
+    setActive([]);
+  }
+
+  function handleStop() {
+    stopSort();
+    setMessage("Stopped.");
+  }
+
+  function handleRestart() {
+    stopSort();
+    setTimeout(() => startSort(), 50);
   }
 
   function handleSpeedChange(val) {
@@ -110,7 +125,6 @@ function BubbleSortVisualizer() {
     <div className="visualizer">
       <h2>Bubble Sort Visualizer</h2>
 
-      
       <div className="controls input-controls">
         <input
           type="text"
@@ -127,7 +141,6 @@ function BubbleSortVisualizer() {
         </button>
       </div>
 
-    
       <div className="speed-control">
         <span className="speed-label">Speed:</span>
         {[1, 2, 3, 4].map((s) => (
@@ -141,7 +154,6 @@ function BubbleSortVisualizer() {
         ))}
       </div>
 
-     
       <div className="array-container">
         {array.map((value, index) => {
           const height = Math.max((value / maxValue) * 260, 24);
@@ -160,29 +172,11 @@ function BubbleSortVisualizer() {
         })}
       </div>
 
-      
       <div className="controls playback-controls">
-        <button
-          onClick={startSort}
-          disabled={isRunning}
-          className="btn btn-primary"
-        >
-          Start
-        </button>
-        <button
-          onClick={handlePauseResume}
-          disabled={!isRunning}
-          className="btn btn-secondary"
-        >
-          {isPaused ? "Resume" : "Pause"}
-        </button>
-        <button
-          onClick={handleStop}
-          disabled={!isRunning}
-          className="btn btn-danger"
-        >
-          Stop
-        </button>
+        <button onClick={startSort} disabled={isRunning} className="btn btn-primary">Start</button>
+        <button onClick={handlePauseResume} disabled={!isRunning} className="btn btn-secondary">{isPaused ? "Resume" : "Pause"}</button>
+        <button onClick={handleStop} disabled={!isRunning && !isPaused} className="btn btn-danger">Stop</button>
+        <button onClick={handleRestart} disabled={!isRunning && !isPaused} className="btn btn-secondary">Restart</button>
       </div>
 
       <p className="message">{message}</p>

@@ -148,30 +148,59 @@ export default function SelectionSortVisualizer() {
     <>
       <div className="viz-section-title">Selection Sort Visualization</div>
 
-      <div className="input-row">
-        <input className="input-text" placeholder="Enter array (e.g. 30,10,50,20,40)"
-          value={inputVal} onChange={e => setInputVal(e.target.value)}
-          disabled={isSorting} onKeyDown={e => e.key === 'Enter' && handleAddArray()} />
-        <button className="btn btn-primary" onClick={handleAddArray} disabled={isSorting}>Add Your Array</button>
-        <button className="btn btn-success" onClick={() => resetArray()} disabled={isSorting}>Generate Random Array</button>
+      <div className="controls input-controls">
+        <input
+          type="text"
+          placeholder="e.g. 50, 30, 80, 20"
+          value={inputVal}
+          onChange={(e) => setInputVal(e.target.value)}
+          disabled={isSorting}
+          onKeyDown={(e) => e.key === 'Enter' && handleAddArray()}
+        />
+        <button onClick={handleAddArray} disabled={isSorting} className="btn btn-secondary">
+          Load Array
+        </button>
+        <button onClick={() => resetArray()} disabled={isSorting} className="btn btn-secondary">
+          Randomize
+        </button>
       </div>
 
-      <div className="input-row">
-        <div className="slider-group">
-          <label>Speed</label>
-          <input type="range" min="1" max="100" value={speed} disabled={isSorting} onChange={e => setSpeed(+e.target.value)} />
-        </div>
-        <div className="slider-group">
-          <label>Array Length: {length}</label>
-          <input type="range" min={MIN_BARS} max={MAX_BARS} value={length} disabled={isSorting} onChange={handleLengthChange} />
-        </div>
+      <div className="speed-control">
+        <span className="speed-label">Speed:</span>
+        {[1, 2, 3, 4].map((s) => {
+          const speedVals = { 1: 10, 2: 40, 3: 70, 4: 100 };
+          const speedLabels = { 1: "Slow", 2: "Medium", 3: "Fast", 4: "Instant" };
+          const isActive = (s === 1 && speed <= 25) || (s === 2 && speed > 25 && speed <= 55) || (s === 3 && speed > 55 && speed <= 85) || (s === 4 && speed > 85);
+          return (
+            <button
+              key={s}
+              className={`btn btn-speed ${isActive ? "active" : ""}`}
+              onClick={() => setSpeed(speedVals[s])}
+            >
+              {speedLabels[s]}
+            </button>
+          );
+        })}
       </div>
 
-      <div className="controls-row">
-        <button className="btn btn-primary"   onClick={handleSort}  disabled={isSorting || isSorted}>▶ Start</button>
-        <button className="btn btn-warning"   onClick={handlePause} disabled={!isSorting}>{isPaused ? '▶ Resume' : '⏸ Pause'}</button>
-        <button className="btn btn-danger"    onClick={handleStop}  disabled={!isSorting}>⏹ Stop</button>
-        <button className="btn btn-secondary" onClick={() => resetArray()} disabled={isSorting}>↺ Reset</button>
+      <div className="controls input-controls" style={{ marginTop: '10px' }}>
+        <span style={{ marginRight: '10px' }}>Array Length: {length}</span>
+        <input type="range" min={MIN_BARS} max={MAX_BARS} value={length} disabled={isSorting} onChange={handleLengthChange} />
+      </div>
+
+      <div className="controls playback-controls">
+        <button onClick={handleSort} disabled={isSorting || isSorted} className="btn btn-primary">
+          Start
+        </button>
+        <button onClick={handlePause} disabled={!isSorting} className="btn btn-secondary">
+          {isPaused ? "Resume" : "Pause"}
+        </button>
+        <button onClick={handleStop} disabled={!isSorting} className="btn btn-danger">
+          Stop
+        </button>
+        <button onClick={() => resetArray()} disabled={isSorting} className="btn btn-secondary">
+          Reset
+        </button>
       </div>
 
       <div className="legend-row">
